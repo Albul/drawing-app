@@ -1,7 +1,19 @@
 /**
- * Created by abdula on 15.07.2015.
+ * Copyright (c) 2011-2012 Alexandr Albul
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-package {
+package view {
 
 import flash.display.Bitmap;
 import flash.display.Sprite;
@@ -12,12 +24,12 @@ public class ToolPanel extends Sprite {
 	public static const TOOL_PANEL_WIDTH:int = 50;
 	public static const GAP:int = 8;
 
-	[Embed(source='../assets/pencil.png')] private static const IcPencil:Class;
-	[Embed(source='../assets/rect.png')] private static const IcRect:Class;
-	[Embed(source='../assets/ellipse.png')] private static const IcEllipse:Class;
-	[Embed(source='../assets/eraser.png')] private static const IcEraser:Class;
-	[Embed(source='../assets/save.png')] private static const IcSave:Class;
-	[Embed(source='../assets/trash.png')] private static const IcTrash:Class;
+	[Embed(source='../../assets/pencil.png')] private static const IcPencil:Class;
+	[Embed(source='../../assets/rect.png')] private static const IcRect:Class;
+	[Embed(source='../../assets/ellipse.png')] private static const IcEllipse:Class;
+	[Embed(source='../../assets/eraser.png')] private static const IcEraser:Class;
+	[Embed(source='../../assets/save.png')] private static const IcSave:Class;
+	[Embed(source='../../assets/trash.png')] private static const IcTrash:Class;
 
 	public function ToolPanel() {
 	}
@@ -33,6 +45,7 @@ public class ToolPanel extends Sprite {
 
 		// Pencil button
 		var pencilButton:Sprite = new Sprite();
+		pencilButton.buttonMode = true;
 		var pencilBmp:Bitmap = new Bitmap(new IcPencil().bitmapData);
 		pencilButton.addChild(pencilBmp);
 		pencilButton.x = (TOOL_PANEL_WIDTH - pencilButton.width) / 2;
@@ -42,6 +55,7 @@ public class ToolPanel extends Sprite {
 
 		// Rect button
 		var rectButton:Sprite = new Sprite();
+		rectButton.buttonMode = true;
 		var rectBmp:Bitmap = new Bitmap(new IcRect().bitmapData);
 		rectButton.addChild(rectBmp);
 		rectButton.x = pencilButton.x;
@@ -51,6 +65,7 @@ public class ToolPanel extends Sprite {
 
 		// Ellipse button
 		var ellipseButton:Sprite = new Sprite();
+		ellipseButton.buttonMode = true;
 		var ellipseBmp:Bitmap = new Bitmap(new IcEllipse().bitmapData);
 		ellipseButton.addChild(ellipseBmp);
 		ellipseButton.x = pencilButton.x;
@@ -60,6 +75,7 @@ public class ToolPanel extends Sprite {
 
 		// Eraser button
 		var eraserButton:Sprite = new Sprite();
+		eraserButton.buttonMode = true;
 		var eraserBmp:Bitmap = new Bitmap(new IcEraser().bitmapData);
 		eraserButton.addChild(eraserBmp);
 		eraserButton.x = pencilButton.x;
@@ -67,16 +83,24 @@ public class ToolPanel extends Sprite {
 		addChild(eraserButton);
 		eraserButton.addEventListener(MouseEvent.CLICK, eraserButton_clickHandler);
 
+		// Thickness button
+		var thicknessButton:ThicknessButton = new ThicknessButton();
+		thicknessButton.x = pencilButton.x;
+		thicknessButton.y = eraserButton.y + eraserButton.height + GAP;
+		addChild(thicknessButton);
+		thicknessButton.init();
+
 		// Divider
 		var divider:Sprite = new Sprite();
 		divider.graphics.beginFill(Constants.GRAY_COLOR, 1);
 		divider.graphics.drawRect(0, 0, TOOL_PANEL_WIDTH, 2);
 		divider.graphics.endFill();
-		divider.y = eraserButton.y + eraserButton.height + 2 * GAP;
+		divider.y = thicknessButton.y + thicknessButton.height + 2 * GAP;
 		addChild(divider);
 
 		// Save button
 		var saveButton:Sprite = new Sprite();
+		saveButton.buttonMode = true;
 		var saveBmp:Bitmap = new Bitmap(new IcSave().bitmapData);
 		saveButton.addChild(saveBmp);
 		saveButton.x = pencilButton.x;
@@ -86,6 +110,7 @@ public class ToolPanel extends Sprite {
 
 		// Trash can button
 		var trashButton:Sprite = new Sprite();
+		trashButton.buttonMode = true;
 		var trashBmp:Bitmap = new Bitmap(new IcTrash().bitmapData);
 		trashButton.addChild(trashBmp);
 		trashButton.x = pencilButton.x;
@@ -96,7 +121,7 @@ public class ToolPanel extends Sprite {
 
 	public function drawBg():void {
 		graphics.clear();
-		graphics.beginFill(0x3F51B5, 0.6);
+		graphics.beginFill(Constants.PANEL_COLOR);
 		graphics.drawRect(0, 0, TOOL_PANEL_WIDTH, stage.stageHeight);
 		graphics.endFill();
 	}
