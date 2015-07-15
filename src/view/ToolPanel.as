@@ -21,8 +21,11 @@ import flash.events.MouseEvent;
 
 public class ToolPanel extends Sprite {
 
-	public static const TOOL_PANEL_WIDTH:int = 50;
 	public static const GAP:int = 8;
+
+	//--------------------------------------
+	//  Embedded icons
+	//--------------------------------------
 
 	[Embed(source='../../assets/pencil.png')] private static const IcPencil:Class;
 	[Embed(source='../../assets/rect.png')] private static const IcRect:Class;
@@ -30,6 +33,13 @@ public class ToolPanel extends Sprite {
 	[Embed(source='../../assets/eraser.png')] private static const IcEraser:Class;
 	[Embed(source='../../assets/save.png')] private static const IcSave:Class;
 	[Embed(source='../../assets/trash.png')] private static const IcTrash:Class;
+
+	//--------------------------------------
+	//  Private members
+	//--------------------------------------
+
+	private var _thicknessPanel:ThicknessPanel;
+	private var _palettePanel:PalettePanel;
 
 	public function ToolPanel() {
 	}
@@ -48,7 +58,7 @@ public class ToolPanel extends Sprite {
 		pencilButton.buttonMode = true;
 		var pencilBmp:Bitmap = new Bitmap(new IcPencil().bitmapData);
 		pencilButton.addChild(pencilBmp);
-		pencilButton.x = (TOOL_PANEL_WIDTH - pencilButton.width) / 2;
+		pencilButton.x = (Constants.TOOL_PANEL_WIDTH - pencilButton.width) / 2;
 		pencilButton.y = GAP;
 		addChild(pencilButton);
 		pencilButton.addEventListener(MouseEvent.CLICK, pencilButton_clickHandler);
@@ -83,19 +93,28 @@ public class ToolPanel extends Sprite {
 		addChild(eraserButton);
 		eraserButton.addEventListener(MouseEvent.CLICK, eraserButton_clickHandler);
 
-		// Thickness button
-		var thicknessButton:ThicknessButton = new ThicknessButton();
-		thicknessButton.x = pencilButton.x;
-		thicknessButton.y = eraserButton.y + eraserButton.height + GAP;
-		addChild(thicknessButton);
-		thicknessButton.init();
+		// Thickness panel
+		_thicknessPanel = new ThicknessPanel();
+		_thicknessPanel.x = pencilButton.x;
+		_thicknessPanel.y = eraserButton.y + eraserButton.height + GAP;
+		addChild(_thicknessPanel);
+		_thicknessPanel.init();
+		_thicknessPanel.addEventListener(ToolEvent.SUB_PANEL_OPENED, subPanelOpenedHandler);
+
+		// Palette panel
+		_palettePanel = new PalettePanel();
+		_palettePanel.x = pencilButton.x;
+		_palettePanel.y = _thicknessPanel.y + _thicknessPanel.height + GAP;
+		addChild(_palettePanel);
+		_palettePanel.init();
+		_palettePanel.addEventListener(ToolEvent.SUB_PANEL_OPENED, subPanelOpenedHandler);
 
 		// Divider
 		var divider:Sprite = new Sprite();
 		divider.graphics.beginFill(Constants.GRAY_COLOR, 1);
-		divider.graphics.drawRect(0, 0, TOOL_PANEL_WIDTH, 2);
+		divider.graphics.drawRect(0, 0, Constants.TOOL_PANEL_WIDTH, 2);
 		divider.graphics.endFill();
-		divider.y = thicknessButton.y + thicknessButton.height + 2 * GAP;
+		divider.y = _palettePanel.y + _palettePanel.height + 2 * GAP;
 		addChild(divider);
 
 		// Save button
@@ -122,7 +141,7 @@ public class ToolPanel extends Sprite {
 	public function drawBg():void {
 		graphics.clear();
 		graphics.beginFill(Constants.PANEL_COLOR);
-		graphics.drawRect(0, 0, TOOL_PANEL_WIDTH, stage.stageHeight);
+		graphics.drawRect(0, 0, Constants.TOOL_PANEL_WIDTH, stage.stageHeight);
 		graphics.endFill();
 	}
 
@@ -154,6 +173,14 @@ public class ToolPanel extends Sprite {
 
 	private function trashButton_clickHandler(event:MouseEvent):void {
 		dispatchEvent(new ToolEvent(ToolEvent.TRASH_CLICKED));
+	}
+
+	private function subPanelOpenedHandler(event:ToolEvent):void {
+		if (event.currentTarget == _thicknessPanel) {
+			_palettePanel.closePanel();
+		} else {
+			_thicknessPanel.closePanel();
+		}
 	}
 }
 }

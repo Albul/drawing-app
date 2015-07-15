@@ -15,22 +15,26 @@
  */
 package {
 public class Constants {
+	public static const TOOL_PANEL_WIDTH:int = 50;
+	public static const COLOR_BTN_SIZE:int = 28;
+	public static const ERASER_SIZE:int = 30;
+
 	// Tool Ids
-	public static var INVALID_TOOL:int = -1;
-	public static var PENCIL_TOOL:int = 0;
-	public static var RECT_TOOL:int = 1;
-	public static var ELLIPSE_TOOL:int = 2;
-	public static var ERASER_TOOL:int = 3;
+	public static const INVALID_TOOL:int = -1;
+	public static const PENCIL_TOOL:int = 0;
+	public static const RECT_TOOL:int = 1;
+	public static const ELLIPSE_TOOL:int = 2;
+	public static const ERASER_TOOL:int = 3;
 
 	// Thickness
-	public static var SMALL:int = 1;
-	public static var MEDIUM:int = 3;
-	public static var LARGE:int = 6;
+	public static const SMALL:int = 1;
+	public static const MEDIUM:int = 3;
+	public static const LARGE:int = 6;
 
 	// Colors
-	public static var BLACK_COLOR:uint = 0x000000;
-	public static var WHITE_COLOR:uint = 0xFFFFFF;
-	public static var GRAY_COLOR:uint = 0x423939;
-	public static var PANEL_COLOR:uint = 0x94A0dC;
+	public static const BLACK_COLOR:uint = 0x000000;
+	public static const WHITE_COLOR:uint = 0xFFFFFF;
+	public static const GRAY_COLOR:uint = 0x423939;
+	public static const PANEL_COLOR:uint = 0xE6E9F8;
 }
 }

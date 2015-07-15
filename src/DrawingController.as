@@ -15,6 +15,8 @@
  */
 package {
 import flash.display.BitmapData;
+import flash.display.CapsStyle;
+import flash.display.JointStyle;
 import flash.display.Shape;
 import flash.display.Sprite;
 import flash.events.MouseEvent;
@@ -29,20 +31,19 @@ import view.ToolPanel;
 
 public class DrawingController {
 
-	private static const ERASER_SIZE:int = 10;
-
 	//--------------------------------------
 	//  Private members
 	//--------------------------------------
 
 	private var _currentTool:int = Constants.INVALID_TOOL;
 	private var _currentColor:uint = Constants.BLACK_COLOR;
+	private var _currentAlpha:Number = 1;
 	private var _currentThickness:int = Constants.SMALL;
 	private var _currentLayer:Shape;
 	private var _board:Sprite;
 
-	private var startX:Number;
-	private var startY:Number;
+	private var _startX:Number;
+	private var _startY:Number;
 
 	public function DrawingController(toolPanel:ToolPanel, board:Sprite) {
 		_board = board;
@@ -50,6 +51,7 @@ public class DrawingController {
 		toolPanel.addEventListener(ToolEvent.SAVE_CLICKED, saveClickedHandler);
 		toolPanel.addEventListener(ToolEvent.TRASH_CLICKED, trashClickedHandler);
 		toolPanel.addEventListener(ToolEvent.THICKNESS_CHANGED, thicknessChangedHandler);
+		toolPanel.addEventListener(ToolEvent.COLOR_CHANGED, colorChangedHandler);
 		_board.addEventListener(MouseEvent.MOUSE_DOWN, board_mouseDownHandler);
 		_board.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
 	}
@@ -116,6 +118,11 @@ public class DrawingController {
 		_currentThickness = event.thickness;
 	}
 
+	private function colorChangedHandler(event:ToolEvent):void {
+		_currentColor = event.color;
+		_currentAlpha = event.alpha;
+	}
+
 	//--------------------------------------------------------------------------
 	//
 	//  Drawing methods
@@ -127,7 +134,8 @@ public class DrawingController {
 		_currentLayer = new Shape();
 		_board.addChild(_currentLayer);
 
-		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor);
+		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor, _currentAlpha, false, "normal",
+				CapsStyle.ROUND, JointStyle.ROUND);
 		_currentLayer.graphics.moveTo(_board.mouseX, _board.mouseY);
 
 		_board.addEventListener(MouseEvent.MOUSE_MOVE, drawPencilTool);
@@ -146,19 +154,19 @@ public class DrawingController {
 		_currentLayer = new Shape();
 		_board.addChild(_currentLayer);
 
-		startX = _board.mouseX;
-		startY = _board.mouseY;
-		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor);
-		_currentLayer.graphics.drawRect(startX, startY, 2, 2);
+		_startX = _board.mouseX;
+		_startY = _board.mouseY;
+		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor, _currentAlpha);
+		_currentLayer.graphics.drawRect(_startX, _startY, 2, 2);
 
 		_board.addEventListener(MouseEvent.MOUSE_MOVE, drawRectTool);
 	}
 
 	private function drawRectTool(event:MouseEvent):void {
 		_currentLayer.graphics.clear();
-		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor);
-		var rectWidth:Number = _board.mouseX - startX;
-		var rectHeight:Number = _board.mouseY - startY;
+		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor, _currentAlpha);
+		var rectWidth:Number = _board.mouseX - _startX;
+		var rectHeight:Number = _board.mouseY - _startY;
 
 		// Proportional scaling
 		if (event.ctrlKey) {
@@ -168,7 +176,7 @@ public class DrawingController {
 			rectWidth *= widthSign;
 			rectHeight *= heightSign;
 		}
-		_currentLayer.graphics.drawRect(startX, startY, rectWidth, rectHeight);
+		_currentLayer.graphics.drawRect(_startX, _startY, rectWidth, rectHeight);
 	}
 
 	private function stopRectTool():void {
@@ -180,19 +188,19 @@ public class DrawingController {
 		_currentLayer = new Shape();
 		_board.addChild(_currentLayer);
 
-		startX = _board.mouseX;
-		startY = _board.mouseY;
-		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor);
-		_currentLayer.graphics.drawEllipse(startX, startY, 2, 2);
+		_startX = _board.mouseX;
+		_startY = _board.mouseY;
+		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor, _currentAlpha);
+		_currentLayer.graphics.drawEllipse(_startX, _startY, 2, 2);
 
 		_board.addEventListener(MouseEvent.MOUSE_MOVE, drawEllipseTool);
 	}
 
 	private function drawEllipseTool(event:MouseEvent):void {
 		_currentLayer.graphics.clear();
-		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor);
-		var ellipseWidth:Number = _board.mouseX - startX;
-		var ellipseHeight:Number = _board.mouseY - startY;
+		_currentLayer.graphics.lineStyle(_currentThickness, _currentColor, _currentAlpha);
+		var ellipseWidth:Number = _board.mouseX - _startX;
+		var ellipseHeight:Number = _board.mouseY - _startY;
 
 		// Proportional scaling
 		if (event.ctrlKey) {
@@ -202,7 +210,7 @@ public class DrawingController {
 			ellipseWidth *= widthSign;
 			ellipseHeight *= heightSign;
 		}
-		_currentLayer.graphics.drawEllipse(startX, startY, ellipseWidth, ellipseHeight);
+		_currentLayer.graphics.drawEllipse(_startX, _startY, ellipseWidth, ellipseHeight);
 	}
 
 	private function stopEllipseTool():void {
@@ -214,7 +222,7 @@ public class DrawingController {
 		_currentLayer = new Shape();
 		_board.addChild(_currentLayer);
 
-		_currentLayer.graphics.lineStyle(ERASER_SIZE, Constants.WHITE_COLOR);
+		_currentLayer.graphics.lineStyle(Constants.ERASER_SIZE, Constants.WHITE_COLOR);
 		_currentLayer.graphics.moveTo(_board.mouseX, _board.mouseY);
 
 		_board.addEventListener(MouseEvent.MOUSE_MOVE, drawEraserTool);

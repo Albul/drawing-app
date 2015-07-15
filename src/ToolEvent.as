@@ -18,18 +18,24 @@ import flash.events.Event;
 
 public class ToolEvent extends Event {
 
+	public static var SUB_PANEL_OPENED:String = "subPanelOpened";
 	public static var TRASH_CLICKED:String = "trashClicked";
 	public static var SAVE_CLICKED:String = "saveClicked";
 	public static var TOOL_SELECTED:String = "toolSelected";
 	public static var THICKNESS_CHANGED:String = "thicknessChanged";
+	public static var COLOR_CHANGED:String = "colorChanged";
 
 	private var _tool:int;
 	private var _thickness:int;
+	private var _color:uint;
+	private var _alpha:Number;
 
-	public function ToolEvent(type:String, tool:int = -1, thickness:int = 1) {
+	public function ToolEvent(type:String, tool:int = -1, thickness:int = 1, color:uint = 0xFFFFFF, alpha:Number = 1) {
 		super(type, true, false);
 		_tool = tool;
 		_thickness = thickness;
+		_color = color;
+		_alpha = alpha;
 	}
 
 	public function get tool():int {
@@ -38,6 +44,14 @@ public class ToolEvent extends Event {
 
 	public function get thickness():int {
 		return _thickness;
+	}
+
+	public function get color():uint {
+		return _color;
+	}
+
+	public function get alpha():Number {
+		return _alpha;
 	}
 }
 }

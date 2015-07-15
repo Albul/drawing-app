@@ -19,7 +19,7 @@ import flash.display.Sprite;
 import flash.events.MouseEvent;
 import flash.geom.Point;
 
-public class ThicknessButton extends Sprite {
+public class ThicknessPanel extends DropRightPanel {
 
 	//--------------------------------------
 	//  Embedded icons
@@ -35,7 +35,6 @@ public class ThicknessButton extends Sprite {
 
 	private var _mainButton:Sprite;
 	private var _mainBmp:Bitmap;
-	private var _dropRightPanel:Sprite;
 	private var _thickSmallButton:Sprite;
 	private var _thickMediumButton:Sprite;
 	private var _thickLargeButton:Sprite;
@@ -46,7 +45,8 @@ public class ThicknessButton extends Sprite {
 	//
 	//--------------------------------------------------------------------------
 
-	public function ThicknessButton() {
+	public function ThicknessPanel() {
+		super();
 	}
 
 	public function init():void {
@@ -57,7 +57,6 @@ public class ThicknessButton extends Sprite {
 		addChild(_mainButton);
 		_mainButton.addEventListener(MouseEvent.CLICK, mainButton_clickHandler);
 
-		_dropRightPanel = new Sprite();
 		_dropRightPanel.x = _mainButton.width;
 
 		// Button small thickness
@@ -87,7 +86,7 @@ public class ThicknessButton extends Sprite {
 		_dropRightPanel.addChild(_thickLargeButton);
 		_thickLargeButton.addEventListener(MouseEvent.CLICK, thickButton_clickHandler);
 
-		_dropRightPanel.x = ToolPanel.TOOL_PANEL_WIDTH;
+		_dropRightPanel.x = Constants.TOOL_PANEL_WIDTH;
 		_dropRightPanel.y = parent.localToGlobal(new Point(x, y)).y;
 		_dropRightPanel.graphics.beginFill(Constants.PANEL_COLOR);
 		_dropRightPanel.graphics.drawRect(0, 0, _dropRightPanel.width, _dropRightPanel.height);
@@ -104,6 +103,7 @@ public class ThicknessButton extends Sprite {
 		if (stage.contains(_dropRightPanel)) {
 			stage.removeChild(_dropRightPanel);
 		} else {
+			dispatchEvent(new ToolEvent(ToolEvent.SUB_PANEL_OPENED));
 			stage.addChild(_dropRightPanel);
 		}
 	}
@@ -122,9 +122,7 @@ public class ThicknessButton extends Sprite {
 			_mainBmp = new Bitmap(new IcLargeLine().bitmapData);
 		}
 		_mainButton.addChild(_mainBmp);
-		if (stage.contains(_dropRightPanel)) {
-			stage.removeChild(_dropRightPanel);
-		}
+		closePanel();
 		dispatchEvent(new ToolEvent(ToolEvent.THICKNESS_CHANGED, -1, thickness));
 	}
 }
