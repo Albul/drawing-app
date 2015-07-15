@@ -14,6 +14,7 @@ public class ToolPanel extends Sprite {
 
 	[Embed(source='../assets/pencil.png')] private static const IcPencil:Class;
 	[Embed(source='../assets/rect.png')] private static const IcRect:Class;
+	[Embed(source='../assets/ellipse.png')] private static const IcEllipse:Class;
 	[Embed(source='../assets/eraser.png')] private static const IcEraser:Class;
 	[Embed(source='../assets/save.png')] private static const IcSave:Class;
 	[Embed(source='../assets/trash.png')] private static const IcTrash:Class;
@@ -48,12 +49,21 @@ public class ToolPanel extends Sprite {
 		addChild(rectButton);
 		rectButton.addEventListener(MouseEvent.CLICK, rectButton_clickHandler);
 
+		// Ellipse button
+		var ellipseButton:Sprite = new Sprite();
+		var ellipseBmp:Bitmap = new Bitmap(new IcEllipse().bitmapData);
+		ellipseButton.addChild(ellipseBmp);
+		ellipseButton.x = pencilButton.x;
+		ellipseButton.y = rectButton.y + rectButton.height + GAP;
+		addChild(ellipseButton);
+		ellipseButton.addEventListener(MouseEvent.CLICK, ellipseButton_clickHandler);
+
 		// Eraser button
 		var eraserButton:Sprite = new Sprite();
 		var eraserBmp:Bitmap = new Bitmap(new IcEraser().bitmapData);
 		eraserButton.addChild(eraserBmp);
 		eraserButton.x = pencilButton.x;
-		eraserButton.y = rectButton.y + rectButton.height + GAP;
+		eraserButton.y = ellipseButton.y + ellipseButton.height + GAP;
 		addChild(eraserButton);
 		eraserButton.addEventListener(MouseEvent.CLICK, eraserButton_clickHandler);
 
@@ -103,6 +113,10 @@ public class ToolPanel extends Sprite {
 
 	private function rectButton_clickHandler(event:MouseEvent):void {
 		dispatchEvent(new ToolEvent(ToolEvent.TOOL_SELECTED, Constants.RECT_TOOL));
+	}
+
+	private function ellipseButton_clickHandler(event:MouseEvent):void {
+		dispatchEvent(new ToolEvent(ToolEvent.TOOL_SELECTED, Constants.ELLIPSE_TOOL));
 	}
 
 	private function eraserButton_clickHandler(event:MouseEvent):void {

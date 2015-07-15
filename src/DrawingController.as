@@ -9,6 +9,8 @@ import flash.events.MouseEvent;
 import flash.net.FileReference;
 import flash.utils.ByteArray;
 
+import utils.MathUtils;
+
 import utils.PNGEncoder;
 
 public class DrawingController {
@@ -51,6 +53,9 @@ public class DrawingController {
 			case Constants.RECT_TOOL:
 				startRectTool();
 				break;
+			case Constants.ELLIPSE_TOOL:
+				startEllipseTool();
+				break;
 			case Constants.ERASER_TOOL:
 				startEraserTool();
 				break;
@@ -64,6 +69,9 @@ public class DrawingController {
 				break;
 			case Constants.RECT_TOOL:
 				stopRectTool();
+				break;
+			case Constants.ELLIPSE_TOOL:
+				stopEllipseTool();
 				break;
 			case Constants.ERASER_TOOL:
 				stopEraserTool();
@@ -130,11 +138,56 @@ public class DrawingController {
 	private function drawRectTool(event:MouseEvent):void {
 		_currentLayer.graphics.clear();
 		_currentLayer.graphics.lineStyle(_currentSize, _currentColor);
-		_currentLayer.graphics.drawRect(startX, startY, _board.mouseX - startX, _board.mouseY - startY);
+		var rectWidth:Number = _board.mouseX - startX;
+		var rectHeight:Number = _board.mouseY - startY;
+
+		// Proportional scaling
+		if (event.ctrlKey) {
+			var widthSign:int = MathUtils.sign(rectWidth);
+			var heightSign:int = MathUtils.sign(rectHeight);
+			rectWidth = rectHeight = Math.min(Math.abs(rectWidth), Math.abs(rectHeight));
+			rectWidth *= widthSign;
+			rectHeight *= heightSign;
+		}
+		_currentLayer.graphics.drawRect(startX, startY, rectWidth, rectHeight);
 	}
 
 	private function stopRectTool():void {
 		_board.removeEventListener(MouseEvent.MOUSE_MOVE, drawRectTool);
+	}
+
+	// Ellipse
+	private function startEllipseTool():void {
+		_currentLayer = new Shape();
+		_board.addChild(_currentLayer);
+
+		startX = _board.mouseX;
+		startY = _board.mouseY;
+		_currentLayer.graphics.lineStyle(_currentSize, _currentColor);
+		_currentLayer.graphics.drawEllipse(startX, startY, 2, 2);
+
+		_board.addEventListener(MouseEvent.MOUSE_MOVE, drawEllipseTool);
+	}
+
+	private function drawEllipseTool(event:MouseEvent):void {
+		_currentLayer.graphics.clear();
+		_currentLayer.graphics.lineStyle(_currentSize, _currentColor);
+		var ellipseWidth:Number = _board.mouseX - startX;
+		var ellipseHeight:Number = _board.mouseY - startY;
+
+		// Proportional scaling
+		if (event.ctrlKey) {
+			var widthSign:int = MathUtils.sign(ellipseWidth);
+			var heightSign:int = MathUtils.sign(ellipseHeight);
+			ellipseWidth = ellipseHeight = Math.min(Math.abs(ellipseWidth), Math.abs(ellipseHeight));
+			ellipseWidth *= widthSign;
+			ellipseHeight *= heightSign;
+		}
+		_currentLayer.graphics.drawEllipse(startX, startY, ellipseWidth, ellipseHeight);
+	}
+
+	private function stopEllipseTool():void {
+		_board.removeEventListener(MouseEvent.MOUSE_MOVE, drawEllipseTool);
 	}
 
 	// Eraser
